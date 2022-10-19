@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  bootcamp:
+    container_name: bigbox
+    image: bigbox_better
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          #cpus: '0.50'
+          memory: 8192m
+        reservations:
+          #cpus: '0.40'
+          memory: 8192m
+    cap_add:
+      - SYS_ADMIN
+    hostname: bootcamp # Assign Running Container a Hostname that will identify the container 
+    domainname: local
+    restart: "no"
+    volumes:
+    # Volumes section defined the mappings between host machine and
+    # virtual machine.
+    # ":" split each element into 2 parts
+    # the left part is the folder in host machine
+    # the right part is the folder in virtual machine
+    # docker-compose support relative path
+    # Please refer to
+    # https://docs.docker.com/compose/compose-file/#volumes
+    # for more detail if you are interested
+      - /:/mnt/host
+    environment:
+      - CONTAINER=docker
+    # /scripts/entrypoint.sh will start all the services
+    # and then finally listen to port 22.
+    command: /bin/bash -c "/scripts/entrypoint.sh && /bin/bash"
+      #- /scripts/entrypoint.sh
+      #- /bin/bash
+      
+    #command: [ "/scripts/start-services.sh" ]
+    ports:
+    # Ports section defined a few rules and forward the network
+    # stream between host machine and vm.
+    # As the rules in volumes section
+    # The left part is for your host machine.
+    # This means you can visit localhost:2333
+    # and then get the response from the app
+    # listening port 22 in docker container 
+      - "2233:22"
+      - "9530:9530" # Zeppeling
+      - "8888:8888" #Jupyter
+      # - "8983:8983" # for solr
+      # - "7077:7077" # spark
+#networks:
+  #hadoopenv:
